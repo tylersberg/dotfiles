@@ -1,44 +1,47 @@
--- Install packer
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
+ --Install packer
+ local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-end
+ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+   vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
+ end
 
-vim.cmd [[
-  augroup Packer
-    autocmd!
-    autocmd BufWritePost init.lua PackerCompile
-  augroup end
-]]
+ vim.cmd [[
+   augroup Packer
+     autocmd!
+     autocmd BufWritePost init.lua PackerCompile
+   augroup end
+ ]]
 
-local use = require('packer').use
-require('packer').startup(function()
-  use 'wbthomason/packer.nvim' -- Package manager
-  --use 'tpope/vim-fugitive' -- Git commands in nvim
-  --use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
-  use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
-  --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
-  -- UI to select things (files, grep results, open buffers...)
-  use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-  use 'mjlbach/onedark.nvim' -- Theme inspired by Atom
-  use 'marko-cerovac/material.nvim'
-  use 'nvim-lualine/lualine.nvim' -- Fancier statusline
-  -- Add indentation guides even on blank lines
-  use 'lukas-reineke/indent-blankline.nvim'
-  -- Add git related info in the signs columns and popups
-  use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  -- Highlight, edit, and navigate code using a fast incremental parsing library
-  use 'nvim-treesitter/nvim-treesitter'
-  -- Additional textobjects for treesitter
-  use 'nvim-treesitter/nvim-treesitter-textobjects'
-  use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-  use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'saadparwaiz1/cmp_luasnip'
-  use 'L3MON4D3/LuaSnip' -- Snippets plugin
-end)
+ local use = require('packer').use
+ require('packer').startup(function()
+   use 'wbthomason/packer.nvim' -- Package manager
+   use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
+   --UI to select things (files, grep results, open buffers...)
+   use {'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+   use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+   -- Visual Style
+   use 'marko-cerovac/material.nvim'
+   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
+   use 'lukas-reineke/indent-blankline.nvim'
+   -- Add git related info in the signs columns and popups
+   use {'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+   -- Highlight, edit, and navigate code using a fast incremental parsing library
+   use 'nvim-treesitter/nvim-treesitter'
+   -- Additional textobjects for treesitter
+   use 'nvim-treesitter/nvim-treesitter-textobjects'
+   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
+   use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
+   use 'hrsh7th/cmp-nvim-lsp'
+   use 'saadparwaiz1/cmp_luasnip'
+   use 'L3MON4D3/LuaSnip' -- Snippets plugin
+   use 'kyazdani42/nvim-web-devicons'
+   use 'kyazdani42/nvim-tree.lua'
+   -- Unused
+   --use 'tpope/vim-fugitive' -- Git commands in nvim
+   --use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
+   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+   --use 'mjlbach/onedark.nvim' -- Theme inspired by Atom
+ end)
 
 --Set highlight on search
 vim.o.hlsearch = false
@@ -46,7 +49,7 @@ vim.o.hlsearch = false
 --Line Numbers and Scrolling
 vim.wo.number = true
 vim.wo.relativenumber = true
-vim.scrollof = 20
+vim.o.scrolloff = 20
 
 --No wrapping
 vim.o.wrap = false
@@ -85,13 +88,21 @@ require('lualine').setup {
   },
 }
 
+--Setup nvim-tree
+require'nvim-tree'.setup {
+  view = {
+    width = 35
+    },
+  filters = {
+    dotfiles = true
+  }
+}
+vim.cmd [[
+autocmd BufEnter * ++nested if winnr('$') == 1 && bufname() == 'NvimTree_' . tabpagenr() | quit | endif
+]]
+
 --Enable Comment.nvim
 require('Comment').setup()
-
---Generic Keymaps
-vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
 
 -- Highlight on yank
 vim.cmd [[
@@ -108,15 +119,15 @@ vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile' }
 vim.g.indent_blankline_show_trailing_blankline_indent = false
 
 -- Gitsigns
--- require('gitsigns').setup {
---   signs = {
---     add = { text = '+' },
---     change = { text = '~' },
---     delete = { text = '_' },
---     topdelete = { text = '‾' },
---     changedelete = { text = '~' },
---   },
--- }
+require('gitsigns').setup {
+  signs = {
+    add = { text = '+' },
+    change = { text = '~' },
+    delete = { text = '_' },
+    topdelete = { text = '‾' },
+    changedelete = { text = '~' },
+  },
+}
 
 -- Telescope
 require('telescope').setup {
@@ -133,7 +144,15 @@ require('telescope').setup {
 -- Enable telescope fzf native
 require('telescope').load_extension 'fzf'
 
+--Generic Keymaps
+vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent = true })
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 --Add leader shortcuts
+-- Nvim-Tree
+vim.api.nvim_set_keymap('n', '<leader>d', [[<cmd>lua require('nvim-tree').toggle(false, false)<CR>]], { noremap = true, silent = true})
+-- Telescope
 vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua require('telescope.builtin').buffers()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sf', [[<cmd>lua require('telescope.builtin').find_files({peviewer = false})<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sb', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<CR>]], { noremap = true, silent = true })
