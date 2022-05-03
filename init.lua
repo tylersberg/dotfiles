@@ -29,11 +29,15 @@
    use 'nvim-treesitter/nvim-treesitter'
    -- Additional textobjects for treesitter
    use 'nvim-treesitter/nvim-treesitter-textobjects'
-   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-   use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
+   -- LSP
+   use 'williamboman/nvim-lsp-installer'
+   use 'neovim/nvim-lspconfig'
+   -- Autocompletion plugin
+   use 'hrsh7th/nvim-cmp'
    use 'hrsh7th/cmp-nvim-lsp'
    use 'saadparwaiz1/cmp_luasnip'
-   use 'L3MON4D3/LuaSnip' -- Snippets plugin
+   -- Snippets plugin
+   use 'L3MON4D3/LuaSnip'
    use 'kyazdani42/nvim-web-devicons'
    use 'kyazdani42/nvim-tree.lua'
    -- Unused
@@ -242,12 +246,15 @@ local on_attach = function(_, bufnr)
   vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
 end
 
+-- Enable the following language servers
+local servers = { 'clangd', 'pylsp', 'jdtls', 'tsserver', 'jsonls', 'sqlls'}
+require("nvim-lsp-installer").setup {
+  ensure_installed = servers
+}
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
- -- -- Enable the following language servers
-local servers = { 'clangd', 'pylsp'}
 for _, lsp in ipairs(servers) do
  lspconfig[lsp].setup {
    on_attach = on_attach,
